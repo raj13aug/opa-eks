@@ -24,7 +24,7 @@ resource "helm_release" "gatekeeper" {
 }
 
 resource "helm_release" "gatekeeper-templates" {
-  chart     = "${path.k8s-gatekeeper}/helm-gatekeeper-templates"
+  chart     = "${path.root}/helm-gatekeeper-templates"
   name      = "gatekeeper-templates"
   namespace = var.namespace
   version   = "0.0.3"
@@ -35,7 +35,7 @@ resource "helm_release" "gatekeeper-templates" {
 }
 
 resource "helm_release" "gatekeeper-constraints" {
-  chart     = "${path.k8s-gatekeeper}/helm-gatekeeper-constraints"
+  chart     = "${path.root}/helm-gatekeeper-constraints"
   name      = "gatekeeper-constraints"
   namespace = var.namespace
   version   = "0.0.3"
