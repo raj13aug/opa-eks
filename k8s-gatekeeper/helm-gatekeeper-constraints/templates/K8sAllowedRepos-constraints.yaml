@@ -1,9 +1,10 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sPSPPrivilegedContainer
+kind: DenyRestrictedNamespaceAccess
 metadata:
-  name: psp-privileged-container
+  name: denyrestrictednamespaceaccess
 spec:
   match:
-    kinds:
-      - apiGroups: [""]
-        kinds: ["Pod"]
+    namespaces:
+      - kube-system
+  rules:
+  - operations: ["*"]
