@@ -96,7 +96,7 @@ module "eks" {
       resolve_conflicts = "OVERWRITE"
     }
   }
-  
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
@@ -113,91 +113,4 @@ module "eks" {
   }
 
   eks_managed_node_groups = var.eks_managed_node_groups
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# IRSA
-# ---------------------------------------------------------------------------------------------------------------------
-
-resource "aws_iam_policy" "external_dns" {
-  name        = "${module.eks.cluster_id}-external-dns"
-  description = "Policy allowing external-dns to change Route53 entries"
-  policy      = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ChangeResourceRecordSets"
-      ],
-      "Resource": [
-        "arn:aws:route53:::hostedzone/${aws_route53_zone.cluster_fqdn.zone_id}"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ListHostedZones",
-        "route53:ListResourceRecordSets"
-      ],
-      "Resource": [
-        "*"
-      ]
-    }
-  ]
-}
-EOF
-}
-
-module "iam_assumable_role_external_dns" {
-  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "5.2.0"
-  create_role                   = true
-  provider_url                  = "module.eks.oidc_provider"
-  role_name                     = "${module.eks.cluster_id}-irsa-external-dns"
-  role_description              = "Allow external-dns to change Route53 entries"
-  role_policy_arns              = [aws_iam_policy.external_dns.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:external-dns:external-dns"]
-}
-
-resource "aws_iam_policy" "cert_manager" {
-  name        = "${module.eks.cluster_id}-cert-manager"
-  description = "Policy allowing cert-manager to change Route53 entries"
-  policy      = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "route53:GetChange",
-      "Resource": "arn:aws:route53:::change/${aws_route53_zone.cluster_fqdn.zone_id}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:ChangeResourceRecordSets",
-        "route53:ListResourceRecordSets"
-      ],
-      "Resource": "arn:aws:route53:::hostedzone/${aws_route53_zone.cluster_fqdn.zone_id}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "route53:ListHostedZonesByName",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-module "iam_assumable_role_cert_manager" {
-  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "5.2.0"
-  create_role                   = true
-  provider_url                  = "module.eks.oidc_provider"
-  role_name                     = "${module.eks.cluster_id}-irsa-cert-manager"
-  role_description              = "Allow cert-manager to change Route53 entries"
-  role_policy_arns              = [aws_iam_policy.cert_manager.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:cert-manager:cert-manager"]
 }
