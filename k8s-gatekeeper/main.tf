@@ -9,6 +9,12 @@ provider "kubernetes" {
 }
 
 
+resource "kubernetes_namespace" "staging-app" {
+  metadata {
+    name = "staging"
+  }
+}
+
 resource "kubernetes_namespace" "gatekeeper" {
   metadata {
     name = var.namespace
