@@ -1,3 +1,10 @@
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
+
+
 resource "kubernetes_namespace" "gatekeeper" {
   metadata {
     name = var.namespace
