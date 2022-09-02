@@ -1,14 +1,9 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sValidImageRepos
+kind: K8sPSPPrivilegedContainer
 metadata:
-  name: allowed-repo-gcr
+  name: psp-privileged-container
 spec:
   match:
     kinds:
       - apiGroups: [""]
-        kinds: ["Deployment"]
-    namespaces:
-      - "staging"
-  parameters:
-    repos:
-      - "gcr"
+        kinds: ["Pod"]
