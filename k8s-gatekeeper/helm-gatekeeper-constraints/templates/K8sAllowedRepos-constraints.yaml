@@ -8,7 +8,7 @@ spec:
       - apiGroups: [""]
         kinds: ["Deployment"]
     namespaces:
-      - "staging"
+      - "default"
   parameters:
     repos:
       - "gcr"
