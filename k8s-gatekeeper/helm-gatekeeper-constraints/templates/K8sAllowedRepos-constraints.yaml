@@ -1,10 +1,11 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: DenyRestrictedNamespaceAccess
+kind: K8sAlwaysDeny
 metadata:
-  name: denyrestrictednamespaceaccess
+  name: pod-always-deny
 spec:
   match:
-    namespaces:
-      - kube-system
-  rules:
-  - operations: ["*"]
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+  parameters:
+    message: "You are restricted to Create Pods"

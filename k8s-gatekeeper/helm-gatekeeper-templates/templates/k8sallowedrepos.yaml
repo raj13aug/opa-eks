@@ -1,18 +1,23 @@
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
-  name: denyrestrictednamespaceaccess
+  name: k8salwaysdeny
 spec:
   crd:
     spec:
       names:
-        kind: DenyRestrictedNamespaceAccess
+        kind: K8sAlwaysDeny
+      validation:
+        # Schema for the 'parameters' field
+        openAPIV3Schema:
+          properties:
+            message:
+              type: string
   targets:
     - target: admission.k8s.gatekeeper.sh
       rego: |
-        package DenyNamespace
-
+        package k8salwaysdeny
         violation[{"msg": msg}] {
-          not startswith(input.review.userInfo.username, "system:")
-          msg := sprintf("you cant use namespace: %v", [input.review.object.metadata.namespace])
+          1 > 0
+          msg := input.parameters.message
         }
