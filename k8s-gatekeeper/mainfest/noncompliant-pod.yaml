@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: nodeapp
-        image: registry.docker.hub.com/nodeapp
+        image: nodeapp
         ports:
         - containerPort: 9000
